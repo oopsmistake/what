@@ -1,0 +1,98 @@
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.InputStreamReader;
+
+public class search {
+
+	public static int[] values;
+	public static int size = 1000000;
+
+	public static void readFile() throws Exception {
+		BufferedReader reader = new BufferedReader(new FileReader("sorted.txt"));
+
+		int i = 0;
+
+		size = Integer.parseInt(reader.readLine());
+		values = new int[size];
+
+		String line = null;
+
+		while ((line = reader.readLine()) != null) {
+			values[i] = Integer.parseInt(line);
+			i++;
+		}
+		reader.close();
+	}
+
+
+	public static int linearSearch(int number) {
+		for (int z = 0; z < values.length; z++) {
+			if (values[z] == number)
+				return z;
+		}
+		return -1;
+	}
+
+
+
+
+	public static int binary(int number, int startIndex, int endIndex){
+
+		if (endIndex < startIndex)
+			return -1;
+
+		int mid = (startIndex + endIndex) / 2;
+
+		if (values[mid] == number)
+			return mid;
+		else if (values[mid] < number) {
+			return binary(number, mid + 1, endIndex);
+		}
+		return -1;
+
+	}
+
+	public static int inter(int number, int startIndex, int endIndex) {
+	
+
+		if (endIndex < startIndex)
+			return -1;
+		if (number < values[startIndex] || number > values[endIndex])
+			return -1;
+
+		int mid = (int) (((0.0 + number - values[startIndex]) / (values[endIndex] - values[startIndex]))
+				* (endIndex - startIndex) + startIndex);
+
+		if (values[mid] == number)
+			return mid;
+
+		else if (values[mid] < number) {
+			return inter(number, mid + 1, endIndex);
+		}
+
+		else {
+			return inter(number, startIndex, mid - 1 );
+		}
+
+	}
+
+
+	public static void main(String[] args) throws Exception {
+		int index;
+		int number;
+		BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
+		System.out.print("Which number would you like to locate? ");
+		 number = Integer.parseInt(stdin.readLine());
+		index = linearSearch(number);
+		//index = binary(number, 0, values.length - 1);
+		//index = inter(number, 0, values.length - 1);
+
+		if (index == -1) {
+			System.out.println("Sorry, your number was not found.");
+		} else {
+			System.out.println("Your number was located at position " + index);
+		}
+	}
+
+}
+
