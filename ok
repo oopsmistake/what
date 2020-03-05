@@ -1,3 +1,4 @@
+import java.util.Random;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.InputStreamReader;
@@ -6,6 +7,10 @@ public class search {
 
 	public static int[] values;
 	public static int size = 1000000;
+	public static int counterL = 0;
+	public static int counterB = 0;
+	public static int counterI = 0;
+	public static int run = 100;
 
 	public static void readFile() throws Exception {
 		BufferedReader reader = new BufferedReader(new FileReader("sorted.txt"));
@@ -24,8 +29,8 @@ public class search {
 		reader.close();
 	}
 
-
 	public static int linearSearch(int number) {
+		counterL++;
 		for (int z = 0; z < values.length; z++) {
 			if (values[z] == number)
 				return z;
@@ -33,11 +38,8 @@ public class search {
 		return -1;
 	}
 
-
-
-
-	public static int binary(int number, int startIndex, int endIndex){
-
+	public static int binary(int number, int startIndex, int endIndex) {
+		counterB++;
 		if (endIndex < startIndex)
 			return -1;
 
@@ -53,15 +55,16 @@ public class search {
 	}
 
 	public static int inter(int number, int startIndex, int endIndex) {
-	
+		counterI++;
+		int startNum = values[startIndex];
+		int endNum = values[endIndex];
 
 		if (endIndex < startIndex)
 			return -1;
 		if (number < values[startIndex] || number > values[endIndex])
 			return -1;
 
-		int mid = (int) (((0.0 + number - values[startIndex]) / (values[endIndex] - values[startIndex]))
-				* (endIndex - startIndex) + startIndex);
+		int mid = (int) (startIndex + ((0.0 + number - startNum) / (endNum - startNum) * (endIndex - startIndex)));
 
 		if (values[mid] == number)
 			return mid;
@@ -71,28 +74,53 @@ public class search {
 		}
 
 		else {
-			return inter(number, startIndex, mid - 1 );
+			return inter(number, startIndex, mid - 1);
 		}
 
 	}
-
 
 	public static void main(String[] args) throws Exception {
+		readFile();
 		int index;
+		int Lmax = 0, Bmax = 0, Imax = 0, Lmin = 0, Bmin = 0, Imin = 0, Lavg = 0, Bavg = 0, Iavg = 0;
 		int number;
+		Random random = new Random();
 		BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
-		System.out.print("Which number would you like to locate? ");
-		 number = Integer.parseInt(stdin.readLine());
-		index = linearSearch(number);
-		//index = binary(number, 0, values.length - 1);
-		//index = inter(number, 0, values.length - 1);
+		int randIndex;
+		for (int i = 0; i < 100; i++) {
+			counterL = 0;
+			counterB = 0;
+			counterI = 0;
 
-		if (index == -1) {
-			System.out.println("Sorry, your number was not found.");
-		} else {
-			System.out.println("Your number was located at position " + index);
+			randIndex = random.nextInt(10000);
+			index = linearSearch(values[randIndex]);
+			index = binary(values[randIndex], 0, values.length - 1);
+			index = inter(values[randIndex], 0, values.length - 1);
+
+			if (Lmax < counterL)
+				Lmax = counterL;
+			if (Bmax < counterB)
+				Bmax = counterB;
+			if (Imax < counterI)
+				Imax = counterI;
+
+			if (Lmin > counterL)
+				Lmin = counterL;
+			if (Bmin > counterB)
+				Bmin = counterB;
+			if (Imin > counterI)
+				Imin = counterI;
+
+			Lavg = Lavg + counterL;
+			Bavg = Bavg + counterB;
+			Iavg = Iavg + counterI;
 		}
+		Lavg = Lavg / run;
+		Bavg = Bavg / run;
+		Iavg = Iavg / run;
+		
+		System.out.println ("Linear Search \n Lowest runtime: " + Lmin + " Highest runtime : " + Lmax + " Average runtime : " + Lavg);
+		
+
 	}
-
 }
-
